@@ -1,5 +1,5 @@
 import React from 'react'
-import Genre_carousel from '../Genre_carousel';
+import Genre_carousel from '../Genre_Carousel';
 import Location_And_Year_Card from './Location_And_Year_Card';
 import Credit_Card from './Credit_Card';
 import '../../css/Artist_Page/info_segment.css'

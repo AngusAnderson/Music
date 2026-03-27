@@ -1,10 +1,10 @@
 import React from 'react'
 import '../css/Genre_Carousel.css'
 
-const Genre_carousel = () => {
+const Genre_carousel = ({ genres = [] }) => {
   return (
     <div className='genre-wrapper'>
-        Hard Rock • Metal • Punk
+        {genres.length > 0 ? genres.join(' • ') : 'No genres available'}
     </div>
   )
 }

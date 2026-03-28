@@ -1,16 +1,13 @@
 import React from 'react'
 import '../css/Header_Image_Card.css'
-import { useWikipediaData } from '../hooks/useWikipediaData'
 import fallbackImage from '../assets/Sabs.jpg'
 
-const Header_Image_Card = ({ artistName }) => {
-  const { image, loading, error } = useWikipediaData(artistName)
-
+const Header_Image_Card = ({ image, name }) => {
   return (
     <div className="header-image-container">
       <img 
         src={image || fallbackImage} 
-        alt={artistName} 
+        alt={name} 
         className='header-image'
         onError={(e) => { e.target.src = fallbackImage }}
       />

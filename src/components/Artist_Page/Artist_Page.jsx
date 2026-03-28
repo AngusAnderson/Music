@@ -6,7 +6,7 @@ import { useArtistData } from '../../hooks/useArtistData'
 import '../../css/Artist_Page/Artist_Page.css'
 
 const Artist_Page = () => {
-  const artistName = "Sex Pistols" // You can replace this with dynamic input later
+  const artistName = "Dead Kennedys" // You can replace this with dynamic input later
 
   const artist = useArtistData(artistName)
 

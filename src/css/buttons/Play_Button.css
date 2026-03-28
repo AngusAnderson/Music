@@ -1,0 +1,42 @@
+:root {
+    --btn-start: #ff6b6b;
+    --btn-end: #ee5a6f;
+    --btn-hover-start: #ff7979;
+    --btn-hover-end: #f66d7c;
+
+    --btn-shadow: #c44569;
+}
+
+.button-container {
+    margin: 7rem 0 0 5.5rem;
+}
+
+.btn-3d {
+    position: relative;
+    padding: 20px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(180deg, var(--btn-start) 0%, var(--btn-end) 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    box-shadow: 0 8px 0 var(--btn-shadow), 0 12px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
+}
+
+.btn-3d:hover {
+    background: linear-gradient(180deg, var(--btn-hover-start) 0%, var(--btn-hover-end) 100%);
+}
+
+.btn-3d:active {
+    box-shadow: 0 2px 0 var(--btn-shadow), 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(6px);
+}
+
+.play-svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    vertical-align: middle;
+}

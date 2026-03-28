@@ -1,11 +1,16 @@
 import React from 'react'
 import '../css/Header_Image_Card.css'
-import header_image from '../assets/Sabs.jpg'
+import fallbackImage from '../assets/Sabs.jpg'
 
-const Header_Image_Card = () => {
+const Header_Image_Card = ({ image, name }) => {
   return (
     <div className="header-image-container">
-      <img src={header_image} alt="Header Image" className='header-image' />
+      <img 
+        src={image || fallbackImage} 
+        alt={name} 
+        className='header-image'
+        onError={(e) => { e.target.src = fallbackImage }}
+      />
       <div className="header-overlay"></div>
     </div>
   )

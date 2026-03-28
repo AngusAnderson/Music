@@ -44,3 +44,8 @@ body {
 ::-webkit-scrollbar {
     width: 0;
 }
+
+html, body {
+    cursor: url('../assets/cursors/cursor.png'), auto;
+    height: 100%;
+}

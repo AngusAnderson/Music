@@ -1,3 +1,8 @@
 .info h1{
     font-size: 6rem;
 }
+
+.info {
+    display: flex;
+    justify-content: flex-start;
+}

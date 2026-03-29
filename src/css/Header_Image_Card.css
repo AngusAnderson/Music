@@ -15,7 +15,7 @@
     margin: 0;
     padding: 0;
 
-    filter: grayscale(100%) contrast(1.1) brightness(0.85);
+    filter: grayscale(100%) contrast(1.1) brightness(1);
 }
 
 .header-overlay {

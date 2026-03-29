@@ -1,5 +1,5 @@
 import './css/app.css'
-import Artist_Page from './components/Artist_Page/Artist_Page'
+import Artist_Page from './components/pages/Artist_Page'
 
 
 function App() {

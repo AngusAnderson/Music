@@ -10,8 +10,6 @@ const Info_Segment = ({
   origin, 
   founded, 
   members,
-  popularity,
-  followers
 }) => {
 
   return (
@@ -24,11 +22,6 @@ const Info_Segment = ({
 
         <div className="RHS">
             <Credit_Card members={members} />
-
-            <div className="info-card">
-              <p><strong>Popularity:</strong> {popularity}</p>
-              <p><strong>Followers:</strong> {followers?.toLocaleString()}</p>
-            </div>
         </div>
         
     </div>

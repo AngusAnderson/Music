@@ -1,0 +1,17 @@
+.menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+  
+  .item {
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .item:hover {
+    background: #f0f0f0;
+  }

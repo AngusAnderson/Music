@@ -98,7 +98,7 @@ export const useWikipediaData = (artistName) => {
             founded = match ? match[0] : ''
           }
 
-          // --- MEMBERS (🔥 FIXED) ---
+          // --- MEMBERS (FIXED) ---
           if (
             headerText.includes('members') ||
             headerText.includes('past members')

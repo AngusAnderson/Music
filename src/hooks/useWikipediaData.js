@@ -16,15 +16,16 @@ export const useWikipediaData = (artistName) => {
     const fetchWikipediaData = async () => {
       try {
         const [pageResponse, imageResponse] = await Promise.all([
+          // 🔥 SWITCHED TO HTML INSTEAD OF WIKITEXT
           fetch(
             `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(
               artistName
-            )}&prop=wikitext&format=json&origin=*`
+            )}&prop=text&format=json&origin=*`
           ),
           fetch(
             `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(
               artistName
-            )}&prop=pageimages&pithumbsize=500&format=json&origin=*`
+            )}&prop=pageimages&pithumbsize=1000&format=json&origin=*`
           )
         ])
 
@@ -40,14 +41,15 @@ export const useWikipediaData = (artistName) => {
           return
         }
 
-        const wikitext = pageData.parse.wikitext['*']
+        const html = pageData.parse.text['*']
 
-        // Extract infobox
-        const infoboxMatch = wikitext.match(
-          /\{\{Infobox musical artist([\s\S]*?)\n\}\}/
-        )
+        // 🔥 PARSE HTML
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(html, 'text/html')
 
-        if (!infoboxMatch) {
+        const infobox = doc.querySelector('.infobox')
+
+        if (!infobox) {
           setData(prev => ({
             ...prev,
             error: 'No infobox found',
@@ -56,129 +58,74 @@ export const useWikipediaData = (artistName) => {
           return
         }
 
-        const infobox =
-          '{{Infobox musical artist' + infoboxMatch[1] + '\n}}'
+        const rows = infobox.querySelectorAll('tr')
 
-        // --- HELPERS ---
-
-        const extractFieldRaw = (text, fieldName) => {
-          const startRegex = new RegExp(`\\|\\s*${fieldName}\\s*=`, 'i')
-          const startMatch = text.match(startRegex)
-          if (!startMatch) return ''
-
-          let index = startMatch.index + startMatch[0].length
-          let braceDepth = 0
-          let result = ''
-
-          while (index < text.length) {
-            // Handle nested templates {{ }}
-            if (text.slice(index, index + 2) === '{{') {
-              braceDepth++
-              result += '{{'
-              index += 2
-              continue
-            }
-
-            if (text.slice(index, index + 2) === '}}') {
-              braceDepth--
-              result += '}}'
-              index += 2
-              continue
-            }
-
-            // Stop at next field if NOT inside template
-            if (braceDepth === 0 && text[index] === '|') {
-              break
-            }
-
-            result += text[index]
-            index++
-          }
-
-          return result.trim()
-        }
-
-        const cleanText = (text) => {
-          return text
-            .replace(/\{\{[^}]*\}\}/g, '')
-            .replace(/\[\[/g, '')
-            .replace(/\]\]/g, '')
-            .replace(/<[^>]*>/g, '')
-            .replace(/\n/g, ' ')
-            .replace(/\|/g, '')
-            .trim()
-        }
-
-        // --- NAME ---
-        const name =
-          cleanText(extractFieldRaw(infobox, 'name')) || artistName
-
-        // --- GENRES ---
+        let name = artistName
         let genres = []
-        const rawGenre = extractFieldRaw(infobox, 'genre')
-
-        if (rawGenre) {
-          const matches = rawGenre.match(
-            /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g
-          )
-
-          if (matches) {
-            genres = matches.map(g =>
-              g.replace(/\[\[|\]\]/g, '').split('|')[0].trim()
-            )
-          }
-        }
-
-        genres = genres.slice(0, 3)
-
-        // --- ORIGIN ---
-        const origin = cleanText(extractFieldRaw(infobox, 'origin'))
-
-        // --- FOUNDED ---
+        let origin = ''
         let founded = ''
-        const yearsActive = extractFieldRaw(infobox, 'years_active')
-        if (yearsActive) {
-          const yearMatch = yearsActive.match(/\d{4}/)
-          founded = yearMatch ? yearMatch[0] : ''
-        }
-
-        // --- MEMBERS ---
         let members = []
-        const memberFields = ['members', 'past_members', 'current_members']
 
-        for (const field of memberFields) {
-          const raw = extractFieldRaw(infobox, field)
+        rows.forEach(row => {
+          const header = row.querySelector('th')
+          const value = row.querySelector('td')
 
-          if (raw) {
-            const matches = raw.match(
-              /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g
-            )
+          if (!header || !value) return
 
-            if (matches) {
-              members = matches.map(m => ({
-                name: m
-                  .replace(/\[\[|\]\]/g, '')
-                  .split('|')[0]
-                  .replace(/\(.*?\)/g, '')
-                  .trim(),
-                role: ''
-              }))
-              break
-            }
+          const headerText = header.textContent.toLowerCase()
+
+          // --- NAME ---
+          if (headerText.includes('name')) {
+            name = value.textContent.trim()
           }
-        }
 
-        // --- IMAGE ---
+          // --- GENRES ---
+          if (headerText.includes('genre')) {
+            const links = value.querySelectorAll('a')
+            genres = Array.from(links)
+              .map(link => link.textContent.trim())
+              .slice(0, 3)
+          }
+
+          // --- ORIGIN ---
+          if (headerText.includes('origin')) {
+            origin = value.textContent.trim()
+          }
+
+          // --- YEARS ACTIVE ---
+          if (headerText.includes('years active')) {
+            const match = value.textContent.match(/\d{4}/)
+            founded = match ? match[0] : ''
+          }
+
+          // --- MEMBERS (🔥 FIXED) ---
+          if (
+            headerText.includes('members') ||
+            headerText.includes('past members')
+          ) {
+            const links = value.querySelectorAll('a')
+
+            members = Array.from(links).map(link => ({
+              name: link.textContent.trim(),
+              role: ''
+            }))
+          }
+        })
+
+        // --- IMAGE (FULL RES) ---
         let image = ''
+
         const pages = imageData.query.pages
         const pageId = Object.keys(pages)[0]
         const page = pages[pageId]
 
         if (page.pageimage) {
+          const fileName = page.pageimage
+
           try {
             const fileResponse = await fetch(
               `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(
-                page.pageimage
+                fileName
               )}&prop=imageinfo&iiprop=url&format=json&origin=*`
             )
 
@@ -190,8 +137,8 @@ export const useWikipediaData = (artistName) => {
             if (filePage.imageinfo && filePage.imageinfo[0]) {
               image = filePage.imageinfo[0].url
             }
-          } catch (err) {
-            console.error('Image fetch error:', err)
+          } catch (error) {
+            console.error('Image fetch error:', error)
           }
         }
 

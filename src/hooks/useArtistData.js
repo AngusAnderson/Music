@@ -14,7 +14,7 @@ export const useArtistData = (artistName) => {
       ? spotify.genres.slice(0, 3)
       : wiki.genres,
 
-    image: spotify.image || wiki.image,
+    image: wiki.image || spotify.image,
 
     origin: wiki.origin,
     founded: wiki.founded,

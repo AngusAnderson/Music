@@ -7,9 +7,9 @@ import { useArtistData } from '../../hooks/useArtistData'
 import '../../css/Artist_Page/Artist_Page.css'
 
 const Artist_Page = () => {
-  // const artistName = "Black Sabbath"
+  const artistName = "Black Sabbath"
   // const artistName = "Led Zeppelin"
-  const artistName = "The Clash"
+  // const artistName = "The Clash"
 
   const artist = useArtistData(artistName)
 

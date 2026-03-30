@@ -5,7 +5,7 @@ const Name_Card = ({ name }) => {
   return (
     <div className='info'>
       <h1>{name}</h1>
-      <Play_Button />
+      {/* <Play_Button /> */}
     </div>
   )
 }

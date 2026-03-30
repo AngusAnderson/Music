@@ -53,8 +53,35 @@ export const useSpotifyAlbums = (artistName) => {
           url = data.next
         }
 
+        // --- REMOVE DELUXE, REMASTER, SPECIAL EDITIONS ETC ---
+        const filteredAlbums = allAlbums.filter(album => {
+          const name = album.name.toLowerCase()
+          
+          // List of terms to exclude
+          const excludeTerms = [
+            'deluxe',
+            'remaster',
+            'remastered',
+            'special edition',
+            'anniversary',
+            'expanded',
+            'director\'s cut',
+            'bonus',
+            'remix',
+            'alternate',
+            'live',
+            'compilation',
+            'box set'
+          ]
+          
+          // Check if album name contains any excluded terms
+          return !excludeTerms.some(term => name.includes(term))
+        })
+
+        console.log('Filtered albums:', filteredAlbums.length)
+
         // --- REMOVE DUPLICATES (clean names) ---
-        const uniqueAlbums = allAlbums.filter(
+        const uniqueAlbums = filteredAlbums.filter(
           (album, index, self) =>
             index === self.findIndex(a =>
               a.name.toLowerCase().replace(/\(.*?\)/g, '') ===
